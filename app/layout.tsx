@@ -1,3 +1,7 @@
+import React from "react";
+// Providers
+import { ThemeProvider } from "@/app/lib/styles/theme-provider"
+import { PHProvider } from "@/app/providers";
 // Utils
 import dynamic from 'next/dynamic';
 import { Analytics } from "@vercel/analytics/react";
@@ -59,7 +63,7 @@ export default function RootLayout(
             disableTransitionOnChange
           >
             <PostHogPageView />
-            <Navigation />
+            {/* <Navigation /> */}
             <main
               className="
                 min-h-screen 
