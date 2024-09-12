@@ -1,6 +1,9 @@
 import React from "react";
 // Utils
 import Image from "next/image";
+import clsx from "clsx";
+// Data
+import { books } from "@/app/lib/data/data";
 import {
   Card,
   CardTitle,
@@ -11,41 +14,18 @@ import {
 } from "@/components/ui/card";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Separator } from "@radix-ui/react-separator";
 // Icons
 import { MdOpenInNew } from "react-icons/md";
-
-const bookStores: { [key: string]: { name: string; url: string } } = {
-  adblibris: {
-    name: "Adlibris",
-    url: "https://www.adlibris.com",
-  },
-  bokus: {
-    name: "Bokus",
-    url: "https://www.bokus.com",
-  },
-  akademibokhandeln: {
-    name: "Akademibokhandeln",
-    url: "https://www.akademibokhandeln.se",
-  },
-}
 
 export default async function Book({ 
   params 
 }: { 
-  params: { project: string } 
+  params: { book: string } 
 }) {
-  // Fetch books
-  // If no books, return 404
-  const placeholderBook = {
-    title: "Lägg av!",
-    image: "/images/lagg-av.jpg",
-    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ut purus eget sapien. Sed ut purus eget sapien. Sed ut purus eget sapien.",
-    author: "Marie Oskarsson",
-    publisher: "Publisher",
-    year: "2024",
-  }
+  const book = books.find((book) => book.slug === params.book);
+  if (!book) return null;
   
   return (
     <div
@@ -82,7 +62,7 @@ export default async function Book({
           "
           ratio={1 / 1}
         >
-          {placeholderBook.image ? (
+          {book.image ? (
             <div
               id="book-image-container"
               className="
@@ -98,8 +78,8 @@ export default async function Book({
               "
             >
               <Image
-                src={placeholderBook.image}
-                alt={placeholderBook.title}
+                src={book.image}
+                alt={book.title}
                 fill
                 className="
                   object-contain
@@ -128,17 +108,68 @@ export default async function Book({
             items-start
             w-full
             h-full
-            pb-12
           "
         >
-          <CardHeader className="flex flex-col gap-2">
-            <CardTitle className="text-4xl font-bold">
-              {placeholderBook.title}
+          <CardHeader
+            className="
+              flex
+              flex-col
+              justify-start
+              items-start
+              w-full
+              gap-2
+            "
+          >
+            <CardTitle
+              className={clsx(
+                "text-5xl font-bold",
+                {
+                  "text-4xl": book.title.length > 15,
+                  "text-3xl": book.title.length > 20,
+                  "text-2xl": book.title.length > 25,
+                  "text-xl": book.title.length > 30,
+                }
+              )}
+            >
+              {book.title}
             </CardTitle>
-            <div className="flex flex-row gap-1">
-              <small>{placeholderBook.author}</small>
-              <small>{placeholderBook.publisher}</small>
-              <small>{placeholderBook.year}</small>
+            <div
+              id={`${book.title}-info-container`}
+              className="
+                flex
+                flex-wrap
+                flex-row
+                justify-start
+                items-center
+                gap-2
+                md:text-lg
+              "
+            >
+              <div className="flex flex-wrap gap-2">
+                <small>✍️ {book.authors.join(", ")}</small>
+                {book.illustrators && (
+                  <small>
+                    🎨 {book.illustrators.join(", ")}
+                  </small>
+                )}
+                {book.publisher && (
+                  <>
+                    <small className="text-muted-foreground">{" "}•{" "}</small>
+                    <small>
+                      {book.publisher}
+                    </small>
+                  </>
+                )}
+              </div>
+
+              {book.year && (
+                <>
+                  <small className="text-muted-foreground">{" "}•{" "}</small>
+                  <small>
+                    {book.year}
+                  </small>
+                </>
+              )}
             </div>
           </CardHeader>
           <CardContent
@@ -151,28 +182,97 @@ export default async function Book({
               h-full
             "
           >
-            <CardDescription className="mt-2">
-              {placeholderBook.description}
+            <CardDescription
+              className="
+                flex
+                flex-col
+                flex-wrap
+                gap-2
+                mt-2
+              "
+            >
+              {Array.isArray(book.description) ? (
+                book.description.map((
+                  paragraph: string, 
+                  index: number
+                ) => (
+                  <p key={index}>{paragraph}</p>
+                ))
+              ) : (
+                <p>{book.description}</p>
+              )}
             </CardDescription>
-            
-            {bookStores && (
-              <div className="flex justify-start items-center flex-wrap gap-1">
-                <small className="text-muted-foreground mr-2">Buy {placeholderBook.title} at:{" "}</small>
-                {Object.keys(bookStores).map((store: string) => (
+          </CardContent>
+          <CardFooter
+            className="
+              flex
+              flex-col
+              md:flex-row
+              justify-between
+              items-start
+              w-full
+              gap-4
+              mt-8
+            "
+          >
+            {book.bookstores && (
+              <div
+                className="
+                  flex 
+                  justify-start
+                  items-center
+                  flex-wrap
+                  gap-1
+                "
+              >
+                {book.bookstores.map(({ 
+                  name, 
+                  logo,
+                  url 
+                }: { 
+                  name: string, 
+                  logo: string,
+                  url: string 
+                }) => (
                   <a
-                    key={store}
-                    href={bookStores[store].url}
+                    key={name}
+                    href={url}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    <Badge variant="outline" className="hover:text-muted-foreground">
-                      {bookStores[store].name}
-                    </Badge>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="hover:text-muted-foreground gap-2"
+                    >
+                       {/* TODO: Add store icon as svg */}
+                      {name}
+                      <MdOpenInNew className="hidden md:inline-block" />
+                    </Button>
                   </a>
                 ))}
               </div>
             )}
-          </CardContent>
+            <div
+              className="
+                flex
+                flex-col
+                justify-end
+                items-start
+              "
+            >
+              <small className="text-muted-foreground">
+                Del{" "}
+                <span className="text-black font-semibold">
+                  {book.series.number}
+                </span>
+                {" "}i serien{" "}
+                <span className="text-black font-semibold">
+                  {book.series.name}
+                </span>
+              </small>
+            </div>
+          </CardFooter>
         </Card>
       </div>
     </div>

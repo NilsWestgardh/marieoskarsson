@@ -23,11 +23,11 @@ export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
   keywords: metadataKeywords,
   title: {
-    default: "Nils Westgardh Portfolio",
-    template: `%s | Nils Westgardh`,
+    default: "Marie Oskarsson",
+    template: `%s | Marie Oskarsson`,
   },
   openGraph: {
-    description: "Nils Westgardh is an award-winning advertising creative director skilled in brand stategy, art direction, copywriting, design, and web development.",
+    description: "Marie Oskarsson is a Swedish author and illustrator.",
     images: [
       `${defaultUrl}/opengraph-image.png`,
       `${defaultUrl}/twitter-image.png`,
