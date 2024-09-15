@@ -12,6 +12,8 @@ import "@/app/lib/styles/globals.css";
 // Metadata
 import type { Metadata } from "next";
 import { metadataKeywords } from "@/app/lib/data/data"
+// Custom components
+import Navigation from "@/components/navigation";
 
 const PostHogPageView = dynamic(() => import('./PostHogPageView'), { ssr: false })
 const inter = Inter({ subsets: ["latin"] });
@@ -63,7 +65,7 @@ export default function RootLayout(
             disableTransitionOnChange
           >
             <PostHogPageView />
-            {/* <Navigation /> */}
+            <Navigation />
             <main
               className="
                 min-h-screen 
